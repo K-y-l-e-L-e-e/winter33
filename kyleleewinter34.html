@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>winter33</title>
+    <title>kyleleewinter34</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
@@ -13,6 +13,12 @@
     <script src="js/batterycapacity.js"></script>
     <script src="js/leftsignal.js"></script>
     <script src="js/front_leftsignal.js"></script>
+    <script src="js/ipwebcam.js"></script>
+    <script src="js/ipwebcam_override.js"></script>
+    <script src="lang.js"></script>
+    <script src="swfobject.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.js"></script>
 
     <!---
     <script src="charge107.js"></script>
@@ -22,11 +28,12 @@
     -->
     <style>
     body {
-        background-color:lightred;
+        background-color:#E8E8E8
     }
     </style>
 
     <script>
+
     var tempo = 2000;
     mysong = [
         [261, tempo * .125],
@@ -105,32 +112,32 @@
         $("#forward").click(function(e) {
             console.log('forward');
             socket.emit('drive', {
-                left: 50,
-                right: 50
+                left: 100,
+                right: 100
             });
         });
 
         $("#backward").click(function(e) {
             console.log('backward');
             socket.emit('drive', {
-                left: -50,
-                right: -50
+                left: -100,
+                right: -100
             });
         });
 
         $("#backward-left").click(function(e) {
             console.log('backward-left');
             socket.emit('drive', {
-                left: -50,
-                right: -15
+                left: -100,
+                right: -25
             });
         });
 
         $("#backward-right").click(function(e) {
             console.log('backward-right');
             socket.emit('drive', {
-                left: -15,
-                right: -50
+                left: -25,
+                right: -100
             });
         });
 
@@ -145,24 +152,24 @@
         $("#forward-left").click(function(e) {
             console.log('forward-left');
             socket.emit('drive', {
-                left: 50,
-                right: 15
+                left: 100,
+                right: 25
             });
         });
 
         $("#forward-right").click(function(e) {
             console.log('forward-right');
             socket.emit('drive', {
-                left: 15,
-                right: 50
+                left: 25,
+                right: 100
             });
         });
 
         $("#turnLeft").click(function(e) {
             console.log('left');
             socket.emit('drive', {
-                left: 50,
-                right: -50
+                left: 100,
+                right: -100
             });
         });
 
@@ -170,8 +177,8 @@
         $("#turnRight").click(function(e) {
             console.log('right');
             socket.emit('drive', {
-                left: -50 , 
-                right: 50
+                left: -100 , 
+                right: 100
             });
         });
 
@@ -227,7 +234,7 @@
 
 
 
-            if (event.which === 81) //q - turn left
+            if (event.which === 81) //q - rotate left
             {
                 event.preventDefault();
                 speed = $("#speed").text();
@@ -266,7 +273,7 @@
 
             }
 
-            if (event.which === 69) //e - turn right
+            if (event.which === 69) //e - rotate right
             {
                 event.preventDefault();
                 speed = $("#speed").text();
@@ -336,6 +343,13 @@
 
 
         </div>
+        <h3>Activation Status</h3>
+        <div class="row">
+            <button class="btn-success btn col-md-2" id="passiveMode">Passive Mode</button>
+            <button class="btn-warning btn col-md-2" id="safeMode">Safe Mode</button>
+            <button class="btn-danger btn col-md-2" id="fullMode">Full Mode</button>
+        </div>
+
         <h3>Battery Status</h3>
         <div class="row">
             <div class="col-xs-2 sensor-block">
@@ -363,7 +377,7 @@
                 <div class="sensor-value" id="tempF">...</div>
             </div>
         </div>
-
+              
         <div class="row">
             <button id="togglesensors">Toggle Sensors</button>
             <div class="hidden" id="allsensors">...</div>
@@ -379,17 +393,51 @@
                 <div class="sensor-title">Session Time</div>
                 <div id="elapsedtime" class="sensor-value"></div>
             </div>
-        </div>
 
+        </div>
 
         <h3>Robot Control</h3>
         <div class="row">
-            <button class="btn-success btn col-md-2" id="passiveMode">Passive Mode</button>
-            <button class="btn-warning btn col-md-2" id="safeMode">Safe Mode</button>
-            <button class="btn-danger btn col-md-2" id="fullMode">Full Mode</button>
-        </div>
-        <div class="row">
             <div class="col-xs-3">
+
+        <div id="video_pane" style="margin: auto; border: 1px solid black; display: table;">
+          
+            <img id="img1" class="video-image" alt="video" src="http://10.48.102.160:8080/video" style="visibility: visible;">
+        </div>
+
+       <div class="col-lg-offset-2 col-lg-5">
+      <!--<label>Zoom</label>
+      <form role="form" class="form-horizontal">
+        <div class="form-group">
+          <label for="range_zoom" class="control-label">Zoom: </label>
+          <div class="col-sm-8">
+           <input id="range_zoom" type="range" min="0" max="0"/>
+          </div>
+          <label id="range_zoom_label" for="range_zoom">1 X</label>
+        </div>
+      </form>-->
+
+      <form class="form-horizontal" role="form">
+        <div class="form-group">
+          <label for="range_zoom" class="col-xs-3 control-label">Zoom</label>
+          <div class="col-xs-7">
+            <input id="range_zoom" class="col-xs-12" type="range" min="0" max="0"/>
+          </div>
+          <label for="range_zoom" id="range_zoom_label" class="control-label col-xs-2">1 X</label>
+        </div>
+
+        <div class="form-group">
+          <label for="range_quality" class="col-xs-3 control-label">Stream quality</label>
+          <div class="col-xs-7">
+            <input id="range_quality" class="col-xs-12" type="range" min="1" max="100"/>
+          </div>
+          <label for="range_quality" id="range_quality_label" class="control-label col-xs-2">50%</label>
+        </div>
+
+        <div class="form-group" id="exposure_host">
+        </div>
+    </div>
+</div>
 
 
                 <button id="playsong" class="btn-success btn-lg btn-block">Play Music
@@ -444,6 +492,7 @@
                 </button>
             </div>
         </div>
+
 
         <h3>Signal Status</h3>
         <div class="row">
